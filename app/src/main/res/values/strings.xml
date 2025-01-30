@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">School Clinic Appointment</string>
+    <!-- Other existing strings -->
+
+    <!-- Define the consultation types array -->
+    <string-array name="consultation_types">
+        <item>Annual Physical</item>
+        <item>Dental Examination</item>
+        <item>Immediate Health Care</item>
+    </string-array>
+</resources>
