@@ -1,5 +1,6 @@
 package com.example.schoolclinicappointment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -11,8 +12,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.util.ArrayList;
+import android.widget.ImageView;
 
 public class StudentView extends AppCompatActivity {
 
@@ -33,6 +34,13 @@ public class StudentView extends AppCompatActivity {
         availableSlotsSpinner = findViewById(R.id.availableSlotsSpinner);
         reasonInput = findViewById(R.id.reasonInput);
         confirmBookingButton = findViewById(R.id.confirmBookingButton);
+        ImageView backButton = findViewById(R.id.backButton);
+
+        backButton.setOnClickListener(view -> {
+            Intent intent = new Intent(StudentView.this, Login.class);
+            startActivity(intent);
+            finish();
+        });
 
         // Simulate available slots (replace with real database query)
         availableSlots.add("2025-01-30 | 10:00 AM | Annual Physical");

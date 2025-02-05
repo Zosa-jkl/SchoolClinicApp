@@ -10,10 +10,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
-
+import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
+import android.widget.ImageView;
 
 public class NurseView extends AppCompatActivity {
 
@@ -37,6 +38,12 @@ public class NurseView extends AppCompatActivity {
         timeSlotInput = findViewById(R.id.timeSlotInput);
         addSlotButton = findViewById(R.id.addSlotButton);
         slotsListView = findViewById(R.id.slotsListView);
+        ImageView backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(view -> {
+            Intent intent = new Intent(NurseView.this, Login.class);
+            startActivity(intent);
+            finish();
+        });
 
         // Populate consultation types
         String[] consultationTypes = {"Annual Physical", "Dental Examination", "Immediate Health Care"};

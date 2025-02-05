@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">School Clinic Appointment</string>
     <!-- Other existing strings -->
-
+    <string name="register_text"><u>Click to Register</u></string>
     <!-- Define the consultation types array -->
     <string-array name="consultation_types">
         <item>Annual Physical</item>
