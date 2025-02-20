@@ -45,11 +45,11 @@ public class Login extends AppCompatActivity {
             // Hardcoded credentials
             if (email.equals("nurse") && password.equals("123")) {
                 Toast.makeText(Login.this, "Login Successful (Nurse)", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(Login.this, NurseView.class);
+                Intent intent = new Intent(Login.this, NurseHomeActivity.class);
                 startActivity(intent);
                 finish();
             } else if (email.equals("student") && password.equals("321")) {
-                Toast.makeText(Login.this, "Login Successful (Student/Faculty)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Login.this, "Login Successful (Student)", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(Login.this, StudentView.class);
                 startActivity(intent);
                 finish();

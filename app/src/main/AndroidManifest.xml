@@ -15,6 +15,21 @@
         android:theme="@style/Theme.SchoolClinicAppointment"
         tools:targetApi="31">
         <activity
+            android:name=".AppointmentsPagerAdapter"
+            android:exported="false" />
+        <activity
+            android:name=".AvailableAppointmentsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ImmediateCareActivity"
+            android:exported="false" />
+        <activity
+            android:name=".StudentRecordsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NurseHomeActivity"
+            android:exported="false" />
+        <activity
             android:name=".Register"
             android:exported="false" />
         <activity

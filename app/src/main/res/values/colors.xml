@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="blue">#2196F3</color>   <!-- Blue for appointment button -->
+    <color name="red">#D32F2F</color>    <!-- Red for urgent cases -->
+    <color name="dark_red">#B71C1C</color> <!-- Darker red for logout -->
+    <color name="green">#388E3C</color>  <!-- Green for records -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="purple_500">#6200EE</color> <!-- Material Design Purple -->
 </resources>
