@@ -15,6 +15,27 @@
         android:theme="@style/Theme.SchoolClinicAppointment"
         tools:targetApi="31">
         <activity
+            android:name=".AvailableAppointments"
+            android:exported="false" />
+        <activity
+            android:name=".scam"
+            android:exported="false" />
+        <activity
+            android:name=".AppointmentAdapter"
+            android:exported="false" /> <!-- Main Entry Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- Other Activities -->
+        <activity
+            android:name=".StudentHomeView"
+            android:exported="true" />
+        <activity
             android:name=".AppointmentsPagerAdapter"
             android:exported="false" />
         <activity
@@ -37,20 +58,11 @@
             android:exported="false" />
         <activity
             android:name=".NurseView"
-            android:exported="false" />
+            android:exported="false" /> <!-- Login Activity with Parent Activity -->
         <activity
             android:name=".Login"
-            android:exported="false"
+            android:exported="true"
             android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

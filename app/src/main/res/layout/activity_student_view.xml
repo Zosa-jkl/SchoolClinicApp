@@ -13,30 +13,34 @@
     <!-- Appointment Type Spinner -->
 
     <!-- Reason for Visit Input -->
+
     <CalendarView
         android:id="@+id/calendarView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="410dp"
+        android:layout_height="213dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.117" />
+        app:layout_constraintVertical_bias="0.067" />
+
+    <!-- Confirm Booking Button -->
+
+    <!-- Back Button -->
 
     <Spinner
         android:id="@+id/appointmentTypeSpinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="413dp"
+        android:layout_height="49dp"
         android:hint="Select Appointment Type"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.584" />
+        app:layout_constraintVertical_bias="0.363" />
 
-    <!-- Time Slot Input (EditText for TimePicker) -->
 
     <EditText
         android:id="@+id/reasonInput"
@@ -49,23 +53,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appointmentTypeSpinner"
-        app:layout_constraintVertical_bias="0.004" />
-
-    <!-- Confirm Booking Button -->
-
-    <!-- Back Button -->
-    <EditText
-        android:id="@+id/timeSlotInput"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:hint="Select Time Slot (8 AM - 4 PM)"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/reasonInput"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.599" />
 
     <Button
         android:id="@+id/confirmBookingButton"
@@ -76,7 +64,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/timeSlotInput" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.888" />
+
+    <ListView
+        android:id="@+id/slotsListView"
+        android:layout_width="361dp"
+        android:layout_height="177dp"
+        app:layout_constraintBottom_toTopOf="@+id/reasonInput"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appointmentTypeSpinner"
+        app:layout_constraintVertical_bias="0.754" />
 
     <ImageView
         android:id="@+id/backButton"
@@ -89,5 +88,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/arrow_left" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Available Slots"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/slotsListView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appointmentTypeSpinner" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
