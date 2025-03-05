@@ -58,7 +58,6 @@ public class AvailableAppointments extends AppCompatActivity {
                 // Handle this case if needed
             }
         });
-
         // Back button functionality
         backButton.setOnClickListener(view -> finish());
 
