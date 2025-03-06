@@ -73,11 +73,11 @@ public class StudentView extends AppCompatActivity {
         ArrayList<String> appointmentTypes = new ArrayList<>();
         appointmentTypes.add("Dental Examination");
         appointmentTypes.add("Annual Physical");
-        appointmentTypes.add("Immediate Health Care");
 
         ArrayAdapter<String> appointmentTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, appointmentTypes);
         appointmentTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         appointmentTypeSpinner.setAdapter(appointmentTypeAdapter);
+
 
         // Listen for date selection from calendarView
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
