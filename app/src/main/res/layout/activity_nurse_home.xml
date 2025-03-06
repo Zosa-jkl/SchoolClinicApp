@@ -8,6 +8,15 @@
     android:background="@color/white"
     tools:context=".NurseHomeActivity">
 
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="411dp"
+        android:layout_height="845dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/homebkg"
+        tools:layout_editor_absoluteX="0dp" />
+
     <!-- Header Section -->
 
     <TextView
@@ -18,7 +27,7 @@
         android:gravity="center"
         android:text="Welcome, Nurse!"
         android:textColor="@color/black"
-        android:textSize="22sp"
+        android:textSize="35sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -88,5 +97,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="20dp"/>
+
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="161dp"
+        android:layout_height="57dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/screenshot_2025_01_23_123244_removebg_preview" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
