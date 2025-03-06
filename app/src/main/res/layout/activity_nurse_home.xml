@@ -10,8 +10,6 @@
 
     <!-- Header Section -->
 
-    <!-- Appointment Setter Button -->
-
     <TextView
         android:id="@+id/nurseWelcomeText"
         android:layout_width="wrap_content"
@@ -23,29 +21,15 @@
         android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnAvailableAppointments"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_margin="20dp"
-        android:layout_marginTop="24dp"
-        android:backgroundTint="@color/purple_500"
-        android:text="📅 View Available Appointments"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnAppointmentSetter" />
-
+    <!-- Appointment Setter Button -->
     <Button
         android:id="@+id/btnAppointmentSetter"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_margin="20dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="40dp"
         android:backgroundTint="@color/blue"
         android:text="📅 Appointment Setter"
         android:textColor="@color/white"
@@ -53,35 +37,44 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/nurseWelcomeText" />
 
+    <!-- View Available Appointments Button -->
+    <Button
+        android:id="@+id/btnAvailableAppointments"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/purple_500"
+        android:text="📅 View Available Appointments"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnAppointmentSetter" />
+
+    <!-- Student Records Button -->
     <Button
         android:id="@+id/btnStudentRecords"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_margin="20dp"
         android:layout_marginTop="20dp"
         android:backgroundTint="@color/green"
         android:text="📋 Student Records"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnAvailableAppointments" />
+        app:layout_constraintTop_toBottomOf="@id/btnAvailableAppointments" />
 
+    <!-- Immediate Health Care Button -->
     <Button
         android:id="@+id/btnImmediateCare"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_margin="20dp"
+        android:layout_marginTop="20dp"
         android:backgroundTint="@color/red"
         android:text="🚑 Immediate Health Care"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnStudentRecords" />
-
-    <!-- Immediate Health Care Button -->
-
-    <!-- Student Records Button -->
+        app:layout_constraintTop_toBottomOf="@id/btnStudentRecords" />
 
     <!-- Logout Button -->
     <Button
@@ -94,6 +87,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="20dp"/>
+        android:layout_marginTop="20dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
