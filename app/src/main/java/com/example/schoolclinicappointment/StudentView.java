@@ -188,6 +188,7 @@ public class StudentView extends AppCompatActivity {
                 });
     }
 
+
     // Delete the selected appointment from the 'Appointments' collection
     private void deleteAppointmentFromAppointments() {
         appointmentsRef.whereEqualTo("consultationType", appointmentTypeSpinner.getSelectedItem().toString())
