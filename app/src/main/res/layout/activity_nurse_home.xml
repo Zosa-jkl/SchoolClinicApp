@@ -73,6 +73,18 @@
         app:layout_constraintTop_toBottomOf="@id/btnAvailableAppointments" />
 
     <!-- Immediate Health Care Button -->
+    <Button
+        android:id="@+id/btnImmediateCare"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/red"
+        android:text="🚑 Immediate Health Care"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnStudentRecords" />
 
     <!-- Logout Button -->
     <Button

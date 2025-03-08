@@ -38,7 +38,7 @@
             android:id="@+id/studentRecordsListView"
             android:layout_width="385dp"
             android:layout_height="578dp"
-            android:background="@android:color/white" />
+            android:background="@color/material_dynamic_neutral40" />
     </FrameLayout>
 
 
