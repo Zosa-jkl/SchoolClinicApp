@@ -13,9 +13,10 @@
         android:layout_width="411dp"
         android:layout_height="845dp"
         android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/homebkg"
-        tools:layout_editor_absoluteX="0dp" />
+        app:srcCompat="@drawable/homebkg" />
 
     <!-- Header Section -->
 
