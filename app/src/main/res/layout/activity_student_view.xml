@@ -7,22 +7,22 @@
     android:background="#5A8A86"
     tools:context=".StudentView">
 
-    <CalendarView
-        android:id="@+id/calendarView"
-        android:layout_width="410dp"
-        android:layout_height="213dp"
-        android:layout_marginTop="40dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.067" />
-
     <!-- Confirm Booking Button -->
 
     <!-- Back Button -->
 
+
+    <CalendarView
+        android:id="@+id/calendarView"
+        android:layout_width="397dp"
+        android:layout_height="215dp"
+        android:layout_marginTop="40dp"
+        android:background="#009688"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.067" />
 
     <Spinner
         android:id="@+id/appointmentTypeSpinner"
