@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#5A8A86"
     tools:context=".AvailableAppointments">
 
     <!-- Spinner for Consultation Type -->
@@ -20,14 +21,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ListView
-        android:id="@+id/appointmentsListView"
+    <FrameLayout
         android:layout_width="410dp"
         android:layout_height="627dp"
+        android:background="@android:color/darker_gray"
+        android:padding="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/consultationTypeSpinner" />
+        app:layout_constraintTop_toBottomOf="@id/consultationTypeSpinner">
+
+        <ListView
+            android:id="@+id/appointmentsListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"/>
+    </FrameLayout>
+
 
     <!-- Back Button -->
     <Button

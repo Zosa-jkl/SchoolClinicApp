@@ -62,17 +62,27 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.888" />
 
-    <ListView
-        android:id="@+id/slotsListView"
-        android:layout_width="361dp"
-        android:layout_height="177dp"
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:foregroundTint="@color/black"
+        android:background="@android:color/darker_gray"
+        android:padding="4dp"
         app:layout_constraintBottom_toTopOf="@+id/reasonInput"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appointmentTypeSpinner"
-        app:layout_constraintVertical_bias="0.754" />
+        app:layout_constraintVertical_bias="0.754">
+
+        <ListView
+            android:id="@+id/slotsListView"
+            android:layout_width="361dp"
+            android:layout_height="177dp"
+            android:background="@android:color/white"
+            android:foregroundTint="@color/black" />
+    </FrameLayout>
+
 
     <ImageView
         android:id="@+id/backButton"
@@ -93,7 +103,7 @@
         android:layout_marginTop="5dp"
         android:text="Available Slots"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/slotsListView"
+        app:layout_constraintBottom_toTopOf="@+id/frameLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appointmentTypeSpinner" />
@@ -109,7 +119,8 @@
         app:layout_constraintBottom_toTopOf="@+id/calendarView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView9" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
