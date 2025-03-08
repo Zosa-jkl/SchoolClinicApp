@@ -130,34 +130,32 @@ public class NurseView extends AppCompatActivity {
         });
     }
 
-    // Method to fetch existing slots from Firestore
+    // Method to fetch existing slots from Firebase
     private void fetchExistingSlots() {
         if (selectedDate.isEmpty()) {
-            return;  // If no date is selected, don't fetch
+            return;
         }
-
-        // Query Firestore to get only the "Dental Examination" and "Annual Physical" appointments
         appointmentsRef
                 .whereIn("consultationType", new ArrayList<String>() {{
                     add("Dental Examination");
                     add("Annual Physical");
                 }})
-                .whereEqualTo("date", selectedDate)  // Ensure the date is being matched exactly
+                .whereEqualTo("date", selectedDate)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         QuerySnapshot querySnapshot = task.getResult();
-                        slotsList.clear();  // Clear existing slots before adding the new ones
+                        slotsList.clear();
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                            // Make sure the fields in the Firestore document are named correctly
-                            String time = document.getString("time");  // Fetch time from Firestore
-                            String consultationType = document.getString("consultationType");  // Fetch consultation type
+
+                            String time = document.getString("time");
+                            String consultationType = document.getString("consultationType");
                             if (time != null && consultationType != null) {
                                 String slot = selectedDate + " | " + time + " | " + consultationType;
-                                slotsList.add(slot);  // Add the appointment to the slots list
+                                slotsList.add(slot);
                             }
                         }
-                        slotsAdapter.notifyDataSetChanged();  // Notify the adapter to update the ListView
+                        slotsAdapter.notifyDataSetChanged();
                     } else {
                         Toast.makeText(NurseView.this, "Error fetching slots.", Toast.LENGTH_SHORT).show();
                     }
