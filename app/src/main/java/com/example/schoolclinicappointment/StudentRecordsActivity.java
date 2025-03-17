@@ -64,7 +64,6 @@ public class StudentRecordsActivity extends AppCompatActivity {
         // Default to show "Dental Examination" records
         fetchStudentRecords("Dental Examination");
     }
-
     // Fetch student records from Firestore based on consultation type
     private void fetchStudentRecords(String consultationType) {
         db.collection("studentRecords")
@@ -79,9 +78,10 @@ public class StudentRecordsActivity extends AppCompatActivity {
                             String date = document.getString("date");  // Fetch date from Firestore
                             String studentName = document.getString("studentName"); // Fetch studentName from Firestore
                             String reason = document.getString("reason"); // Fetch reason from Firestore
+                            String status = document.getString("status"); // Fetch status from Firestore
 
-                            if (time != null && date != null && studentName != null && reason != null) {
-                                String record = date + " | " + time + " | " + consultationType + " | " + studentName + " | " + reason;
+                            if (time != null && date != null && studentName != null && reason != null && status != null) {
+                                String record = date + " | " + time + " | " + consultationType + " | " + studentName + " | " + reason + " | Status: " + status;
                                 recordsList.add(record);
                             }
                         }

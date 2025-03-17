@@ -77,8 +77,8 @@
 
 
     <FrameLayout
-        android:layout_width="391dp"
-        android:layout_height="97dp"
+        android:layout_width="389dp"
+        android:layout_height="154dp"
         android:background="@android:color/darker_gray"
         android:padding="4dp"
         app:layout_constraintBottom_toBottomOf="parent"

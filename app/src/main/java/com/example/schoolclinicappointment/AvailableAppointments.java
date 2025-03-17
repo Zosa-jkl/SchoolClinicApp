@@ -15,6 +15,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.DocumentSnapshot;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AvailableAppointments extends AppCompatActivity {
 
@@ -50,14 +52,15 @@ public class AvailableAppointments extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedView, int position, long id) {
                 String selectedConsultationType = (String) parentView.getItemAtPosition(position);
-                fetchAvailableAppointments(selectedConsultationType); // Fetch the available appointments based on selection
+                fetchAvailableAppointments(selectedConsultationType); // Fetch available appointments based on selection
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-                // Handle this case if needed
+                // Do nothing
             }
         });
+
         // Back button functionality
         backButton.setOnClickListener(view -> finish());
 
@@ -68,17 +71,17 @@ public class AvailableAppointments extends AppCompatActivity {
     // Fetch available appointments from Firestore based on consultation type
     private void fetchAvailableAppointments(String consultationType) {
         db.collection("bookedAppointments")
-                .whereEqualTo("consultationType", consultationType) // Filter based on consultation type
+                .whereEqualTo("consultationType", consultationType)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         QuerySnapshot querySnapshot = task.getResult();
                         ArrayList<String> appointmentList = new ArrayList<>();
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                            String time = document.getString("time");  // Fetch time from Firestore
-                            String date = document.getString("date");  // Fetch date from Firestore
-                            String studentName = document.getString("studentName"); // Fetch studentName from Firestore
-                            String reason = document.getString("reason"); // Fetch reason from Firestore
+                            String time = document.getString("time");
+                            String date = document.getString("date");
+                            String studentName = document.getString("studentName");
+                            String reason = document.getString("reason");
 
                             if (time != null && date != null && studentName != null && reason != null) {
                                 String appointment = date + " | " + time + " | " + consultationType + " | " + studentName + " | Reason: " + reason;
@@ -96,14 +99,14 @@ public class AvailableAppointments extends AppCompatActivity {
                         // Handle item click on ListView
                         appointmentsListView.setOnItemClickListener((parent, view, position, id) -> {
                             String selectedAppointment = appointmentList.get(position);
-                            String[] appointmentDetails = selectedAppointment.split(" \\| "); // Split the details
+                            String[] appointmentDetails = selectedAppointment.split(" \\| ");
                             String selectedDate = appointmentDetails[0];
                             String selectedTime = appointmentDetails[1];
                             String selectedConsultationType = appointmentDetails[2];
                             String selectedStudentName = appointmentDetails[3];
-                            String selectedReason = appointmentDetails[4];  // Fetch reason from the appointment details
+                            String selectedReason = appointmentDetails[4];
 
-                            // Confirm with the user to mark appointment as completed
+                            // Show confirmation dialog to mark appointment as Confirmed or Cancelled
                             showConfirmationDialog(selectedDate, selectedTime, selectedConsultationType, selectedStudentName, selectedReason);
                         });
 
@@ -113,46 +116,44 @@ public class AvailableAppointments extends AppCompatActivity {
                 });
     }
 
-    // Show confirmation dialog to the user
+    // Show confirmation dialog to mark appointment as Confirmed or Cancelled
     private void showConfirmationDialog(String date, String time, String consultationType, String studentName, String reason) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Confirm Appointment Completion");
-        builder.setMessage("Are you sure this appointment is met?\nDate: " + date + "\nTime: " + time + "\nConsultation Type: " + consultationType + "\nStudent Name: " + studentName + "\nReason: " + reason);
+        builder.setTitle("Update Appointment Status");
+        builder.setMessage("Would you like to Confirm or Cancel this appointment?\n\nDate: " + date + "\nTime: " + time + "\nConsultation Type: " + consultationType + "\nStudent Name: " + studentName + "\nReason: " + reason);
 
-        builder.setPositiveButton("Yes", (dialog, which) -> {
-            // Transfer the document to studentRecords collection
-            transferToStudentRecords(date, time, consultationType, studentName, reason);
-        });
+        builder.setPositiveButton("Confirm", (dialog, which) -> updateStudentRecords(date, time, consultationType, studentName, reason, "Confirmed"));
 
-        builder.setNegativeButton("No", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton("Cancel", (dialog, which) -> updateStudentRecords(date, time, consultationType, studentName, reason, "Cancelled"));
+
+        builder.setNeutralButton("Close", (dialog, which) -> dialog.dismiss());
+
         builder.create().show();
     }
 
-    // Transfer the appointment to studentRecords collection
-    private void transferToStudentRecords(String date, String time, String consultationType, String studentName, String reason) {
-        // Create an appointment object for the studentRecords collection
-        Appointment appointment = new Appointment(date, time, consultationType, studentName, reason);
+    // Update the studentRecords collection with Confirmed or Cancelled status
+    private void updateStudentRecords(String date, String time, String consultationType, String studentName, String reason, String status) {
+        Map<String, Object> appointmentData = new HashMap<>();
+        appointmentData.put("date", date);
+        appointmentData.put("time", time);
+        appointmentData.put("consultationType", consultationType);
+        appointmentData.put("studentName", studentName);
+        appointmentData.put("reason", reason);
+        appointmentData.put("status", status); // Store status as Confirmed or Cancelled
 
-        // Add the appointment to the studentRecords collection
-        db.collection("studentRecords").add(appointment)
+        db.collection("studentRecords").add(appointmentData)
                 .addOnSuccessListener(aVoid -> {
-                    // After successful addition, remove the appointment from bookedAppointments
-                    removeFromBookedAppointments(date, time, consultationType, studentName, reason);
-
-                    // Show a message indicating the appointment was completed
-                    Toast.makeText(AvailableAppointments.this, "Appointment marked as completed!", Toast.LENGTH_SHORT).show();
-
-                    // Refresh the appointments list with the current consultation type
-                    String selectedConsultationType = consultationTypeSpinner.getSelectedItem().toString();
-                    new Handler().postDelayed(() -> fetchAvailableAppointments(selectedConsultationType), 500);
+                    removeFromBookedAppointments(date, time, consultationType, studentName);
+                    Toast.makeText(AvailableAppointments.this, "Appointment marked as " + status + "!", Toast.LENGTH_SHORT).show();
+                    refreshAppointmentsList();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(AvailableAppointments.this, "Error transferring appointment.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AvailableAppointments.this, "Error updating status.", Toast.LENGTH_SHORT).show();
                 });
     }
 
     // Remove the appointment from bookedAppointments collection
-    private void removeFromBookedAppointments(String date, String time, String consultationType, String studentName, String reason) {
+    private void removeFromBookedAppointments(String date, String time, String consultationType, String studentName) {
         db.collection("bookedAppointments")
                 .whereEqualTo("date", date)
                 .whereEqualTo("time", time)
@@ -162,55 +163,14 @@ public class AvailableAppointments extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && !task.getResult().isEmpty()) {
                         DocumentSnapshot document = task.getResult().getDocuments().get(0);
-                        db.collection("bookedAppointments").document(document.getId()).delete()
-                                .addOnSuccessListener(aVoid -> {
-                                    // Appointment successfully removed from bookedAppointments
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(AvailableAppointments.this, "Error removing appointment.", Toast.LENGTH_SHORT).show();
-                                });
+                        db.collection("bookedAppointments").document(document.getId()).delete();
                     }
                 });
     }
 
-    // Appointment class to represent appointment data
-    public static class Appointment {
-        private String date;
-        private String time;
-        private String consultationType;
-        private String studentName;
-        private String reason;
-
-        public Appointment() {
-            // Default constructor required for Firestore
-        }
-
-        public Appointment(String date, String time, String consultationType, String studentName, String reason) {
-            this.date = date;
-            this.time = time;
-            this.consultationType = consultationType;
-            this.studentName = studentName;
-            this.reason = reason;
-        }
-
-        public String getDate() {
-            return date;
-        }
-
-        public String getTime() {
-            return time;
-        }
-
-        public String getConsultationType() {
-            return consultationType;
-        }
-
-        public String getStudentName() {
-            return studentName;
-        }
-
-        public String getReason() {
-            return reason;
-        }
+    // Refresh appointments list
+    private void refreshAppointmentsList() {
+        String selectedConsultationType = consultationTypeSpinner.getSelectedItem().toString();
+        new Handler().postDelayed(() -> fetchAvailableAppointments(selectedConsultationType), 500);
     }
 }
