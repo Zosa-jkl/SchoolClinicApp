@@ -6,7 +6,6 @@
     <string-array name="consultation_types">
         <item>Annual Physical</item>
         <item>Dental Examination</item>
-        <item>Immediate Health Care</item>
     </string-array>
 
 

@@ -20,7 +20,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class StudentView extends AppCompatActivity {
 
@@ -78,6 +81,9 @@ public class StudentView extends AppCompatActivity {
         appointmentTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         appointmentTypeSpinner.setAdapter(appointmentTypeAdapter);
 
+        // Restrict Calendar to only allow selection from the next day onwards
+        long today = System.currentTimeMillis();
+        calendarView.setMinDate(today + 86400000); // Add 1 day (24 * 60 * 60 * 1000 ms)
 
         // Listen for date selection from calendarView
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
@@ -115,7 +121,7 @@ public class StudentView extends AppCompatActivity {
         });
 
         // Set up ListView Adapter for available slots
-        slotsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, availableSlots);
+        slotsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_activated_1, availableSlots);
         slotsListView.setAdapter(slotsAdapter);
 
         // Set OnItemClickListener for slots ListView
@@ -125,7 +131,8 @@ public class StudentView extends AppCompatActivity {
         });
     }
 
-    // Fetch available slots from Firestore based on date and consultation type
+    // Fetch available slots in ascending order
+    // Fetch available slots in ascending order and convert to 12-hour format
     private void fetchAvailableSlots() {
         String selectedAppointmentType = (String) appointmentTypeSpinner.getSelectedItem();
 
@@ -137,23 +144,34 @@ public class StudentView extends AppCompatActivity {
                         QuerySnapshot querySnapshot = task.getResult();
                         availableSlots.clear();
                         if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                            ArrayList<String> sortedSlots = new ArrayList<>();
+
                             for (DocumentSnapshot document : querySnapshot.getDocuments()) {
                                 String time = document.getString("time");
-                                availableSlots.add(time); // Add the time to the available slots list
+                                sortedSlots.add(time); // Collect the raw 24-hour time format
                             }
+
+                            // Sort time slots in ascending order (24-hour format)
+                            sortedSlots.sort(String::compareTo);
+
+                            // Convert to 12-hour format with AM/PM
+                            for (String time : sortedSlots) {
+                                availableSlots.add(convertTo12HourFormat(time));
+                            }
+
                         } else {
                             Toast.makeText(StudentView.this, "No available slots for this date.", Toast.LENGTH_SHORT).show();
                         }
-                        slotsAdapter.notifyDataSetChanged(); // Update the UI with available slots
+                        slotsAdapter.notifyDataSetChanged();
                     } else {
                         Toast.makeText(StudentView.this, "Error fetching available slots.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
+
     // Confirm booking and save to bookedAppointments collection, then delete from Appointments
     private void confirmBooking(String consultationType, String reason) {
-        // Fetch student name from Firestore
         usersRef.document(studentId).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -161,35 +179,27 @@ public class StudentView extends AppCompatActivity {
                         if (document != null && document.exists()) {
                             String studentName = document.getString("name");
 
-                            // Create a new appointment document in the 'bookedAppointments' collection
                             Appointment bookedAppointment = new Appointment(selectedDate, selectedTimeSlot, consultationType, reason, studentName);
 
-                            // Add the new appointment to 'bookedAppointments' collection
                             bookedAppointmentsRef.add(bookedAppointment)
                                     .addOnSuccessListener(documentReference -> {
-                                        // On successful booking, delete the document from 'Appointments'
                                         deleteAppointmentFromAppointments();
-
-                                        // Confirm booking and show success message
                                         Toast.makeText(StudentView.this, "Appointment booked successfully!", Toast.LENGTH_SHORT).show();
-                                        reasonInput.setText(""); // Clear the reason input
-                                        selectedTimeSlot = ""; // Clear selected time slot
-                                        availableSlots.clear(); // Clear available slots
-                                        slotsAdapter.notifyDataSetChanged(); // Update the UI
+                                        reasonInput.setText("");
+                                        selectedTimeSlot = "";
+                                        availableSlots.clear();
+                                        slotsAdapter.notifyDataSetChanged();
                                         Intent intent = new Intent(StudentView.this, StudentHomeView.class);
                                         startActivity(intent);
                                     })
                                     .addOnFailureListener(e -> {
                                         Toast.makeText(StudentView.this, "Failed to book appointment.", Toast.LENGTH_SHORT).show();
-                                        e.printStackTrace();
                                     });
                         }
                     }
                 });
     }
 
-
-    // Delete the selected appointment from the 'Appointments' collection
     private void deleteAppointmentFromAppointments() {
         appointmentsRef.whereEqualTo("consultationType", appointmentTypeSpinner.getSelectedItem().toString())
                 .whereEqualTo("date", selectedDate)
@@ -199,31 +209,31 @@ public class StudentView extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         for (DocumentSnapshot document : task.getResult()) {
                             appointmentsRef.document(document.getId()).delete()
-                                    .addOnSuccessListener(aVoid -> {
-                                        // Successfully deleted the appointment from 'Appointments'
-                                        Toast.makeText(StudentView.this, "Appointment removed from available slots.", Toast.LENGTH_SHORT).show();
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Toast.makeText(StudentView.this, "Failed to delete appointment from available slots.", Toast.LENGTH_SHORT).show();
-                                    });
+                                    .addOnSuccessListener(aVoid ->
+                                            Toast.makeText(StudentView.this, "Appointment removed from available slots.", Toast.LENGTH_SHORT).show())
+                                    .addOnFailureListener(e ->
+                                            Toast.makeText(StudentView.this, "Failed to delete appointment from available slots.", Toast.LENGTH_SHORT).show());
                         }
                     } else {
                         Toast.makeText(StudentView.this, "No matching appointment found to delete.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
-
-    // Appointment class to represent appointment data
-    public static class Appointment {
-        private String date;
-        private String time;
-        private String consultationType;
-        private String reason;
-        private String studentName; // Added student name
-
-        public Appointment() {
-            // Default constructor required for Firestore
+    // Helper function to convert 24-hour time to 12-hour format with AM/PM
+    private String convertTo12HourFormat(String time24) {
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            SimpleDateFormat outputFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+            return outputFormat.format(inputFormat.parse(time24));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return time24; // Return original time if conversion fails
         }
+    }
+    public static class Appointment {
+        private String date, time, consultationType, reason, studentName;
+
+        public Appointment() { }
 
         public Appointment(String date, String time, String consultationType, String reason, String studentName) {
             this.date = date;
@@ -233,24 +243,10 @@ public class StudentView extends AppCompatActivity {
             this.studentName = studentName;
         }
 
-        public String getDate() {
-            return date;
-        }
-
-        public String getTime() {
-            return time;
-        }
-
-        public String getConsultationType() {
-            return consultationType;
-        }
-
-        public String getReason() {
-            return reason;
-        }
-
-        public String getStudentName() {
-            return studentName;
-        }
+        public String getDate() { return date; }
+        public String getTime() { return time; }
+        public String getConsultationType() { return consultationType; }
+        public String getReason() { return reason; }
+        public String getStudentName() { return studentName; }
     }
 }
