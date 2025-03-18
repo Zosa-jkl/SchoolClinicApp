@@ -57,62 +57,40 @@ public class StudentView extends AppCompatActivity {
         slotsListView = findViewById(R.id.slotsListView);
         ImageView backButton = findViewById(R.id.backButton);
 
-        // Initialize Firestore
+        // Initialize Firebase
         db = FirebaseFirestore.getInstance();
         appointmentsRef = db.collection("Appointments");
         bookedAppointmentsRef = db.collection("bookedAppointments");
         usersRef = db.collection("users");
         auth = FirebaseAuth.getInstance();
-        studentId = auth.getCurrentUser().getUid(); // Get student ID from Firebase Auth
+        studentId = auth.getCurrentUser().getUid();
 
         // Back button functionality
         backButton.setOnClickListener(view -> {
-            Intent intent = new Intent(StudentView.this, StudentHomeView.class);
-            startActivity(intent);
+            startActivity(new Intent(StudentView.this, StudentHomeView.class));
             finish();
         });
 
-        // Populate Appointment Types Spinner
-        ArrayList<String> appointmentTypes = new ArrayList<>();
-        appointmentTypes.add("Dental Examination");
-        appointmentTypes.add("Annual Physical");
-
-        ArrayAdapter<String> appointmentTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, appointmentTypes);
-        appointmentTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        appointmentTypeSpinner.setAdapter(appointmentTypeAdapter);
-
         // Restrict Calendar to only allow selection from the next day onwards
         long today = System.currentTimeMillis();
-        calendarView.setMinDate(today + 86400000); // Add 1 day (24 * 60 * 60 * 1000 ms)
+        calendarView.setMinDate(today + 86400000);
 
         // Listen for date selection from calendarView
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
             selectedDate = year + "-" + (month + 1) + "-" + dayOfMonth;
-            fetchAvailableSlots(); // Fetch available slots when the date changes
+            fetchAvailableSlots();
         });
+
+        // Load available appointment types dynamically
+        loadAvailableAppointmentTypes();
 
         // Confirm booking button click listener
         confirmBookingButton.setOnClickListener(view -> {
             String reason = reasonInput.getText().toString().trim();
             String selectedAppointmentType = (String) appointmentTypeSpinner.getSelectedItem();
 
-            if (selectedDate.isEmpty()) {
-                Toast.makeText(StudentView.this, "Please select a date.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (selectedAppointmentType == null) {
-                Toast.makeText(StudentView.this, "Please select an appointment type.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (reason.isEmpty()) {
-                Toast.makeText(StudentView.this, "Please enter a reason for your visit.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (selectedTimeSlot.isEmpty()) {
-                Toast.makeText(StudentView.this, "Please select a time slot.", Toast.LENGTH_SHORT).show();
+            if (selectedDate.isEmpty() || selectedAppointmentType == null || reason.isEmpty() || selectedTimeSlot.isEmpty()) {
+                Toast.makeText(StudentView.this, "Please complete all fields.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -127,50 +105,80 @@ public class StudentView extends AppCompatActivity {
         // Set OnItemClickListener for slots ListView
         slotsListView.setOnItemClickListener((parent, view, position, id) -> {
             selectedTimeSlot = availableSlots.get(position);
+            slotsAdapter.notifyDataSetChanged();
             Toast.makeText(StudentView.this, "Selected time: " + selectedTimeSlot, Toast.LENGTH_SHORT).show();
         });
     }
 
-    // Fetch available slots in ascending order
-    // Fetch available slots in ascending order and convert to 12-hour format
+    private void loadAvailableAppointmentTypes() {
+        bookedAppointmentsRef.whereEqualTo("studentId", studentId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        ArrayList<String> availableTypes = new ArrayList<>();
+                        availableTypes.add("Dental Examination");
+                        availableTypes.add("Annual Physical");
+
+                        for (DocumentSnapshot document : task.getResult().getDocuments()) {
+                            String bookedType = document.getString("consultationType");
+                            availableTypes.remove(bookedType);
+                        }
+
+                        if (availableTypes.isEmpty()) {
+                            Toast.makeText(StudentView.this, "You have already booked both appointment types.", Toast.LENGTH_LONG).show();
+                            startActivity(new Intent(StudentView.this, StudentHomeView.class));
+                            finish();
+                        } else {
+                            updateSpinner(availableTypes);
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(StudentView.this, "Failed to fetch booked appointments.", Toast.LENGTH_SHORT).show());
+    }
+    private void updateSpinner(ArrayList<String> availableTypes) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(StudentView.this, android.R.layout.simple_spinner_item, availableTypes);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        appointmentTypeSpinner.setAdapter(adapter);
+    }
+
     private void fetchAvailableSlots() {
+        if (selectedDate.isEmpty()) {
+            Toast.makeText(StudentView.this, "Please select a date first.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String selectedAppointmentType = (String) appointmentTypeSpinner.getSelectedItem();
+        if (selectedAppointmentType == null) {
+            Toast.makeText(StudentView.this, "Please select an appointment type.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         appointmentsRef.whereEqualTo("consultationType", selectedAppointmentType)
                 .whereEqualTo("date", selectedDate)
                 .get()
                 .addOnCompleteListener(task -> {
+                    availableSlots.clear();
                     if (task.isSuccessful()) {
                         QuerySnapshot querySnapshot = task.getResult();
-                        availableSlots.clear();
                         if (querySnapshot != null && !querySnapshot.isEmpty()) {
                             ArrayList<String> sortedSlots = new ArrayList<>();
-
                             for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                                String time = document.getString("time");
-                                sortedSlots.add(time); // Collect the raw 24-hour time format
+                                sortedSlots.add(document.getString("time"));
                             }
-
-                            // Sort time slots in ascending order (24-hour format)
                             sortedSlots.sort(String::compareTo);
-
-                            // Convert to 12-hour format with AM/PM
                             for (String time : sortedSlots) {
                                 availableSlots.add(convertTo12HourFormat(time));
                             }
-
                         } else {
                             Toast.makeText(StudentView.this, "No available slots for this date.", Toast.LENGTH_SHORT).show();
                         }
-                        slotsAdapter.notifyDataSetChanged();
                     } else {
                         Toast.makeText(StudentView.this, "Error fetching available slots.", Toast.LENGTH_SHORT).show();
                     }
+                    slotsAdapter.notifyDataSetChanged();
                 });
     }
 
-
-    // Confirm booking and save to bookedAppointments collection, then delete from Appointments
     private void confirmBooking(String consultationType, String reason) {
         usersRef.document(studentId).get()
                 .addOnCompleteListener(task -> {
@@ -181,16 +189,22 @@ public class StudentView extends AppCompatActivity {
 
                             Appointment bookedAppointment = new Appointment(selectedDate, selectedTimeSlot, consultationType, reason, studentName);
 
+                            // Add to bookedAppointments
                             bookedAppointmentsRef.add(bookedAppointment)
                                     .addOnSuccessListener(documentReference -> {
-                                        deleteAppointmentFromAppointments();
+                                        // Now delete the appointment from Appointments collection
+                                        deleteAppointmentFromAppointments(consultationType, selectedDate, selectedTimeSlot);
+
                                         Toast.makeText(StudentView.this, "Appointment booked successfully!", Toast.LENGTH_SHORT).show();
                                         reasonInput.setText("");
                                         selectedTimeSlot = "";
                                         availableSlots.clear();
                                         slotsAdapter.notifyDataSetChanged();
+
+                                        // Redirect to student home
                                         Intent intent = new Intent(StudentView.this, StudentHomeView.class);
                                         startActivity(intent);
+                                        finish();
                                     })
                                     .addOnFailureListener(e -> {
                                         Toast.makeText(StudentView.this, "Failed to book appointment.", Toast.LENGTH_SHORT).show();
@@ -200,13 +214,13 @@ public class StudentView extends AppCompatActivity {
                 });
     }
 
-    private void deleteAppointmentFromAppointments() {
-        appointmentsRef.whereEqualTo("consultationType", appointmentTypeSpinner.getSelectedItem().toString())
-                .whereEqualTo("date", selectedDate)
-                .whereEqualTo("time", selectedTimeSlot)
+    private void deleteAppointmentFromAppointments(String consultationType, String date, String time) {
+        appointmentsRef.whereEqualTo("consultationType", consultationType)
+                .whereEqualTo("date", date)
+                .whereEqualTo("time", time)
                 .get()
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
+                    if (task.isSuccessful() && task.getResult() != null) {
                         for (DocumentSnapshot document : task.getResult()) {
                             appointmentsRef.document(document.getId()).delete()
                                     .addOnSuccessListener(aVoid ->
@@ -219,15 +233,13 @@ public class StudentView extends AppCompatActivity {
                     }
                 });
     }
-    // Helper function to convert 24-hour time to 12-hour format with AM/PM
+
     private String convertTo12HourFormat(String time24) {
         try {
-            SimpleDateFormat inputFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            SimpleDateFormat outputFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-            return outputFormat.format(inputFormat.parse(time24));
+            return new SimpleDateFormat("hh:mm a", Locale.getDefault())
+                    .format(new SimpleDateFormat("HH:mm", Locale.getDefault()).parse(time24));
         } catch (Exception e) {
-            e.printStackTrace();
-            return time24; // Return original time if conversion fails
+            return time24;
         }
     }
     public static class Appointment {

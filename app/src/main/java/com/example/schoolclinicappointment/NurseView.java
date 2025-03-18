@@ -137,7 +137,6 @@ public class NurseView extends AppCompatActivity {
         if (selectedDate.isEmpty()) {
             return;
         }
-
         String selectedConsultationType = consultationTypeSpinner.getSelectedItem().toString();
 
         appointmentsRef
@@ -162,7 +161,6 @@ public class NurseView extends AppCompatActivity {
                     }
                 });
     }
-
     // Method to insert the appointment into Firestore
     private void addAppointmentToFirestore(String date, String time, String consultationType) {
         Appointment newAppointment = new Appointment(date, time, consultationType);

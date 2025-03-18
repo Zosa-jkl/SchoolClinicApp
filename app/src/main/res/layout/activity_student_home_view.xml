@@ -19,8 +19,8 @@
 
     <ImageView
         android:id="@+id/imageView4"
-        android:layout_width="445dp"
-        android:layout_height="321dp"
+        android:layout_width="438dp"
+        android:layout_height="462dp"
         android:scaleType="centerCrop"
         app:srcCompat="@drawable/tealbkgd"
         tools:layout_editor_absoluteX="-17dp"
@@ -47,9 +47,10 @@
         android:text="📅 Book Appointment"
         app:layout_constraintBottom_toBottomOf="@+id/immediateCareButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.478" />
+        app:layout_constraintVertical_bias="0.705" />
 
     <Button
         android:id="@+id/btnLogout"
@@ -59,9 +60,10 @@
         android:text="🔒 Logout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.625" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/immediateCareButton"
@@ -80,13 +82,14 @@
         android:id="@+id/btnCancelAppointment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:text="Cancel Appointment"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/btnBookAppointment"
+        app:layout_constraintBottom_toTopOf="@+id/btnLogout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtAppointmentStatus" />
+        app:layout_constraintTop_toBottomOf="@+id/btnBookAppointment"
+        app:layout_constraintVertical_bias="0.4" />
 
     <ImageView
         android:id="@+id/imageView6"
