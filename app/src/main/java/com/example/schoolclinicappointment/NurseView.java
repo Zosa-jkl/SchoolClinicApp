@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.DocumentSnapshot;
 import android.widget.ArrayAdapter;
 import android.app.AlertDialog;
@@ -62,6 +61,9 @@ public class NurseView extends AppCompatActivity {
 
         // Back button functionality
         backButton.setOnClickListener(view -> finish());
+
+        // Restrict CalendarView to only allow selecting the next day onwards
+        calendarView.setMinDate(System.currentTimeMillis() + 86400000); // 86400000 ms = 1 day
 
         // Fetch existing slots from Firestore
         fetchExistingSlots();
@@ -123,7 +125,7 @@ public class NurseView extends AppCompatActivity {
                     .show();
         });
 
-        // Listen for date selection from calendarView
+        // Listen for date selection from CalendarView
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
             selectedDate = year + "-" + (month + 1) + "-" + dayOfMonth;
             fetchExistingSlots(); // Fetch slots after selecting the date
@@ -135,19 +137,18 @@ public class NurseView extends AppCompatActivity {
         if (selectedDate.isEmpty()) {
             return;
         }
+
+        String selectedConsultationType = consultationTypeSpinner.getSelectedItem().toString();
+
         appointmentsRef
-                .whereIn("consultationType", new ArrayList<String>() {{
-                    add("Dental Examination");
-                    add("Annual Physical");
-                }})
                 .whereEqualTo("date", selectedDate)
+                .whereEqualTo("consultationType", selectedConsultationType) // Filter by consultation type
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         QuerySnapshot querySnapshot = task.getResult();
                         slotsList.clear();
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-
                             String time = document.getString("time");
                             String consultationType = document.getString("consultationType");
                             if (time != null && consultationType != null) {
@@ -170,7 +171,6 @@ public class NurseView extends AppCompatActivity {
                 .addOnSuccessListener(documentReference -> {
                     Toast.makeText(NurseView.this, "Appointment added!", Toast.LENGTH_SHORT).show();
                     String slot = date + " | " + time + " | " + consultationType;
-                    // Add the new slot to the list
                     slotsAdapter.notifyDataSetChanged();  // Update the ListView
                 })
                 .addOnFailureListener(e -> {
